@@ -1,16 +1,19 @@
 package br.com.jera.gasosa;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
+import br.com.jera.gasosa.gps.Posicao;
 import br.com.jeramobstats.JeraAgent;
 
 import com.xtify.android.sdk.PersistentLocationManager;
@@ -20,11 +23,22 @@ public class GasosaActivity extends Activity {
 	public static final String PREFS_NAME = "br.com.jera.gasosa.Config";
 
 	private PersistentLocationManager persistentLocationManager;
+	
+	protected static final String LOG_TAG = "Mensagem";
+	
+	public Posicao posicao = new Posicao(this);
+	
+	public String estado;
+	public String cidade;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+//		posicao.pegaPosicao();
+		
+//		Log.i(LOG_TAG, "Posicao: [" + posicao.localizacao.getLatitude() + ", " + posicao.localizacao.getLongitude() + "], Cidade: " +posicao.cidade + ", Estado: " + posicao.estado);
+		
 		// xtify-specific code
 		Context context = this;
 		persistentLocationManager = new PersistentLocationManager(context);
@@ -71,6 +85,10 @@ public class GasosaActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.search: {
+			startActivity(new Intent(this, GasosaDB.class));
+			return true;
+		}
 		case R.id.config: {
 			startActivity(new Intent(this, Config.class));
 			return true;

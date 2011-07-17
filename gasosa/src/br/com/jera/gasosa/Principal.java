@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -40,6 +41,10 @@ public class Principal extends GasosaActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		posicao.pegaPosicao();
+		Log.i(LOG_TAG, "Posicao: [" + posicao.localizacao.getLatitude() + ", " + posicao.localizacao.getLongitude() + "], Cidade: " +posicao.cidade + ", Estado: " + posicao.estado);
+		
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
 		if (prefs.getBoolean("first_time", true)) {
 			SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, 0).edit();
