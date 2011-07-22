@@ -25,7 +25,7 @@ public class Posicao implements LocationListener {
 	
 	public Posicao(Context context) {
 		super();
-		this.context = context;
+		this.context = context;		
 	}
 
 	public void pegaPosicao() {
@@ -44,7 +44,6 @@ public class Posicao implements LocationListener {
 					Address address = addresses.get(0);
 
 					cidade = address.getLocality().toString();
-					
 					estado = address.getAdminArea().toString();
 					
 
@@ -59,8 +58,6 @@ public class Posicao implements LocationListener {
 
 	private LocationManager getLocationManager() {
 		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-//		LocationManager locationManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);
 		return locationManager;
 	}
 

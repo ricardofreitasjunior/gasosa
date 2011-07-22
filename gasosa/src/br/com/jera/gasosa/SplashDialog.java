@@ -64,9 +64,9 @@ public class SplashDialog extends Dialog {
 		setContentView(R.layout.dynamic_splash);
 
 		ImageView image = (ImageView) findViewById(R.id.splash);
-		BitmapDrawable bd = new BitmapDrawable(activity.getResources(), BitmapFactory.decodeFile(PATH + "splash.jpg"));
+//		BitmapDrawable bd = new BitmapDrawable(activity.getResources(), BitmapFactory.decodeFile(PATH + "splash.jpg"));
 		if (new File(PATH + "splash.jpg").exists()) {
-			image.setBackgroundDrawable(bd);
+//			image.setBackgroundDrawable(bd);
 		} else {
 			image.setImageResource(R.drawable.splash);
 			Preferences.write(activity, "splash_link", "https://market.android.com/details?id=br.com.jera.vikings");

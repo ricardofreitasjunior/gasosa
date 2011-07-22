@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+	<EditText android:layout_height="wrap_content" 
+			android:layout_margin="4px" 
+			android:id="@+id/newSpinnerItemText" 
+			android:layout_width="fill_parent"></EditText>
+	<Button android:layout_height="wrap_content" 
+			android:id="@+id/AddBtn" 
+			android:layout_margin="4px" 
+			android:layout_width="fill_parent" 
+			android:text="Add To Spinner"></Button>
+	<Button android:layout_height="wrap_content" 
+			android:id="@+id/ClearBtn" 
+			android:layout_margin="4px" 
+			android:layout_width="fill_parent" 
+			android:text="Clear Spinner Items"></Button>
+	<Spinner android:layout_height="wrap_content" 
+			android:id="@+id/dynamicSpinner" 
+			android:layout_margin="4px" 
+			android:layout_width="fill_parent"></Spinner>
+</LinearLayout>

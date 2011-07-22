@@ -35,7 +35,7 @@ public class GasosaActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-//		posicao.pegaPosicao();
+		posicao.pegaPosicao();
 		
 //		Log.i(LOG_TAG, "Posicao: [" + posicao.localizacao.getLatitude() + ", " + posicao.localizacao.getLongitude() + "], Cidade: " +posicao.cidade + ", Estado: " + posicao.estado);
 		
@@ -44,14 +44,12 @@ public class GasosaActivity extends Activity {
 		persistentLocationManager = new PersistentLocationManager(context);
 		Thread xtifyThread = new Thread(new Runnable() {
 			public void run() {
-				persistentLocationManager
-						.setNotificationIcon(R.drawable.notification);
-				persistentLocationManager
-						.setNotificationDetailsIcon(R.drawable.icon);
-				boolean trackLocation = persistentLocationManager
-						.isTrackingLocation();
-				boolean deliverNotifications = persistentLocationManager
-						.isDeliveringNotifications();
+				persistentLocationManager.setNotificationIcon(R.drawable.notification);
+				persistentLocationManager.setNotificationDetailsIcon(R.drawable.icon);
+				
+				boolean trackLocation = persistentLocationManager.isTrackingLocation();
+				boolean deliverNotifications = persistentLocationManager.isDeliveringNotifications();
+				
 				if (trackLocation || deliverNotifications) {
 					persistentLocationManager.startService();
 				}
@@ -66,13 +64,13 @@ public class GasosaActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		JeraAgent.onStartSession(this, "QI4YUGV5K7FN7I42RPA1");
+//		JeraAgent.onStartSession(this, "QI4YUGV5K7FN7I42RPA1");
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		JeraAgent.onEndSession(this);
+//		JeraAgent.onEndSession(this);
 	}
 
 	@Override
@@ -86,7 +84,7 @@ public class GasosaActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.search: {
-			startActivity(new Intent(this, GasosaDB.class));
+//			startActivity(new Intent(this, GasosaDB.class));
 			return true;
 		}
 		case R.id.config: {
@@ -131,8 +129,7 @@ public class GasosaActivity extends Activity {
 				String userInput = "" + s.toString().replaceAll("[^\\d]", "");
 				StringBuilder cashAmountBuilder = new StringBuilder(userInput);
 
-				while (cashAmountBuilder.length() > 3
-						&& cashAmountBuilder.charAt(0) == '0') {
+				while (cashAmountBuilder.length() > 3 && cashAmountBuilder.charAt(0) == '0') {
 					cashAmountBuilder.deleteCharAt(0);
 				}
 				while (cashAmountBuilder.length() < 3) {
@@ -142,8 +139,7 @@ public class GasosaActivity extends Activity {
 
 				editText.setText(cashAmountBuilder.toString());
 				editText.setTextKeepState(cashAmountBuilder.toString());
-				Selection.setSelection(editText.getText(), cashAmountBuilder
-						.toString().length());
+				Selection.setSelection(editText.getText(), cashAmountBuilder.toString().length());
 			}
 		}
 	}
