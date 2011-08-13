@@ -12,52 +12,68 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
-
-
 public class Posicao implements LocationListener {
 
-	protected static final String LOG_TAG = "Mensagem";
+protected static final String LOG_TAG = "Mensagem";
 	
+
+	public Location localizacao;
 	public String estado;
 	public String cidade;
-	public Context context;
-	public Location localizacao;
+	public String bairro;
+	public String endereco;
+	public String cep; 
 	
+	public Context context;
+
+	public String pais;
+
+	public LocationManager locationManager;
+		
 	public Posicao(Context context) {
 		super();
 		this.context = context;		
 	}
 
-	public void pegaPosicao() {
-		Location loc = getLocationManager().getLastKnownLocation(LocationManager.GPS_PROVIDER);
+	public String pegaPosicao() {
+		String mensagem = "Não foi possível encontrar localização do usuário.";
+		
+		localizacao = getLocationManager().getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-		if (loc != null) {
-			// ponto = new Ponto(loc.getLatitude(), loc.getLongitude());
-			localizacao = new Location(loc);
-			Log.i(LOG_TAG, "Localização: " + loc.getLatitude() + ", " + loc.getLongitude());
+		if (localizacao != null) {
+			Log.i(LOG_TAG, "Localização: " + localizacao.getLatitude() + ", " + localizacao.getLongitude());
 
 			Geocoder gc = new Geocoder(context, Locale.getDefault());
+		
 			try {
-				List<Address> addresses = gc.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+				List<Address> addresses = gc.getFromLocation(localizacao.getLatitude(), localizacao.getLongitude(), 1);
 				
 				if (addresses.size() > 0) {
 					Address address = addresses.get(0);
 
+//					String num = address.getFeatureName();
+//					String rua = address.getThoroughfare();
+//					bairro = address.getSubLocality();
+					
+					endereco = address.getAddressLine(0);
+					cep = address.getPostalCode();
+					pais = address.getCountryName();
 					cidade = address.getLocality().toString();
 					estado = address.getAdminArea().toString();
-					
-
 				}
+			
+				mensagem = "Sua posição é: " + "[" + endereco + "], [" + cidade + "], [" + estado + "]";
 			} catch (Exception e) {
-				Log.i(LOG_TAG, "Não foi possível encontrar localização." + e);
+				mensagem = "Não foi possível encontrar localização do usuário." + e;
 			}
 		}
-
 		getLocationManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+		
+		return mensagem;
 	}
 
 	private LocationManager getLocationManager() {
-		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		return locationManager;
 	}
 

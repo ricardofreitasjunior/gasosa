@@ -6,15 +6,15 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-public class Posto implements Serializable{
+public class Posto implements Serializable {
 
 	public static String[] colunas = new String[] { Postos._ID, Postos.NOME,
 			Postos.ENDERECO, Postos.BAIRRO, Postos.CIDADE, Postos.UF,
 			Postos.DATA, Postos.LATITUDE, Postos.LONGITUDE, Postos.VLGASOLINA,
-			Postos.VLALCOOL, Postos.VLDIESEL, Postos.VLGNV };
+			Postos.VLETANOL };
 
 	public static final String AUTHORITY = "com.android.mapa.provider.posto";
-	
+
 	public long id;
 	public String nome;
 	public String endereco;
@@ -25,9 +25,7 @@ public class Posto implements Serializable{
 	public String latitude;
 	public String longitude;
 	public String vlgas;
-	public String vlalc;
-	public String vldie;
-	public String vlgnv;
+	public String vleta;
 	public boolean selecionado;
 
 	public Posto() {
@@ -35,8 +33,7 @@ public class Posto implements Serializable{
 
 	protected Posto(long id, String nome, String endereco, String bairro,
 			String cidade, String uf, String data, String latitude,
-			String longitude, String vlGas, String vlAlc, String vlDie,
-			String vlGnv) {
+			String longitude, String vlGas, String vlEta) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -48,15 +45,13 @@ public class Posto implements Serializable{
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.vlgas = vlGas;
-		this.vlalc = vlAlc;
-		this.vldie = vlDie;
-		this.vlgnv = vlGnv;
+		this.vleta = vlEta;
 
 	}
 
 	protected Posto(String nome, String endereco, String bairro, String cidade,
 			String uf, String data, String latitude, String longitude,
-			String vlGas, String vlAlc, String vlDie, String vlGnv) {
+			String vlGas, String vlEta) {
 		super();
 		this.nome = nome;
 		this.endereco = endereco;
@@ -67,9 +62,7 @@ public class Posto implements Serializable{
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.vlgas = vlGas;
-		this.vlalc = vlAlc;
-		this.vldie = vlDie;
-		this.vlgnv = vlGnv;
+		this.vleta = vlEta;
 
 	}
 
@@ -77,7 +70,8 @@ public class Posto implements Serializable{
 		private Postos() {
 		}
 
-		public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/postos");
+		public static final Uri CONTENT_URI = Uri.parse("content://"
+				+ AUTHORITY + "/postos");
 		public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.google.postos";
 		public static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.google.postos";
 		public static final String DEFAULT_SORT_ORDER = "_id ASC";
@@ -90,9 +84,7 @@ public class Posto implements Serializable{
 		public static final String LATITUDE = "latitude";
 		public static final String LONGITUDE = "longitude";
 		public static final String VLGASOLINA = "vlgas";
-		public static final String VLALCOOL = "vlalc";
-		public static final String VLDIESEL = "vldie";
-		public static final String VLGNV = "vlgnv";
+		public static final String VLETANOL = "vleta";
 
 		public static Uri getUriID(long id) {
 			Uri uriPosto = ContentUris.withAppendedId(CONTENT_URI, id);
@@ -105,8 +97,7 @@ public class Posto implements Serializable{
 		return "Nome: " + nome + ", Endereço: " + endereco + ", Bairro: "
 				+ bairro + ", Cidade: " + cidade + ", UF: " + uf
 				+ ", Atualizado em: " + data + ", Gasolina: " + vlgas
-				+ ", Alcool: " + vlalc + ", Diesel: " + vldie + ", GNV: "
-				+ vlgnv;
+				+ ", Etabol: " + vleta;
 
 	}
 

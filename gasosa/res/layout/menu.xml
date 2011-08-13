@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/search" android:icon="@android:drawable/ic_menu_search"
+<menu
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<item
+		android:id="@+id/todos"
+		android:icon="@android:drawable/ic_menu_agenda"
+		android:title="Todos" />
+	<item
+		android:id="@+id/proximos"
+		android:icon="@android:drawable/ic_menu_rotate"
+		android:title="Próximos" />
+	<item
+		android:id="@+id/bairro"
+		android:icon="@android:drawable/ic_menu_search"
+		android:title="Bairro" />
+	<item
+		android:id="@+id/search"
+		android:icon="@android:drawable/ic_menu_search"
 		android:title="Postos" />
-	<item android:id="@+id/config" android:icon="@android:drawable/ic_menu_preferences"
+	<item
+		android:id="@+id/config"
+		android:icon="@android:drawable/ic_menu_preferences"
 		android:title="Configurar" />
-	<item android:id="@+id/principal" android:icon="@android:drawable/ic_menu_edit"
+	<item
+		android:id="@+id/principal"
+		android:icon="@android:drawable/ic_menu_edit"
 		android:title="Calcular" />
 </menu>

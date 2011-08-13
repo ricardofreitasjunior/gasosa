@@ -3,20 +3,18 @@ package br.com.jera.gasosa.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.jera.gasosa.db.Posto.Postos;
-import br.com.jera.gasosa.gps.Posicao;
-
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.location.Location;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import br.com.jera.gasosa.db.Posto.Postos;
+import br.com.jera.gasosa.gps.Posicao;
 
 public class DataHelper {
 
@@ -26,15 +24,10 @@ public class DataHelper {
 	public static final String DROP_SQL;
 	static final String DATABASE_NAME = "GasosaDB.db";
 	static final String DATABASE_TEST_NAME = "GasosaDB-test.db";
-	private int RAIO_PROXIMIDADE = 3450;
-//	public GeoPoint ponto;
-
-	public String TipoCombustivel;
-	public String KmlG;
-	public String KmlA;
-	public String KmlD;
-    public String Raio;
 	
+	private int RAIO_PROXIMIDADE = 3450;
+	public Location localizacao;
+
 	private Context context;
 	public static SQLiteDatabase db;
 	private static boolean testing;
@@ -55,9 +48,7 @@ public class DataHelper {
 		sql.append("latitude text, ");
 		sql.append("longitude text, ");
 		sql.append("vlgas text not null, ");
-		sql.append("vlalc text not null, ");
-		sql.append("vldie text not null, ");
-		sql.append("vlgnv text ");
+		sql.append("vleta text not null");
 		sql.append(")");
 
 		CREATE_SQL = String.format(sql.toString(), TABLE_NAME);
@@ -95,222 +86,74 @@ public class DataHelper {
 			return null;
 		}
 	}
-	
 
-	public Cursor query(SQLiteQueryBuilder queryBuilder, String[] projection, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
-		Cursor c = queryBuilder.query(this.db, projection, selection, selectionArgs, groupBy, having, orderBy);
-		return c;
-	}
-	
-	private void pegaConfiguracao() {
-	    	SharedPreferences conf = PreferenceManager.getDefaultSharedPreferences(context);
-	    	
-	    	TipoCombustivel = conf.getString("tipocomb", "-1");
-	    	KmlG= conf.getString("kmlg", "Não informado");
-	    	KmlA= conf.getString("kmla", "Não informado");
-	    	KmlD= conf.getString("kmld", "Não informado");
-	    	Raio = conf.getString("raio", "3000");
-
-	}
-	
-	public long Salvar(Posto posto) {
-		long id = posto.id;
-
-		if (id != 0) {
-			Atualizar(posto);
-		} else {
-//			id = Cadastrar(posto);
-		}
-		return id;
-	}
-
-	public int Atualizar(Posto posto) {
-		ContentValues dados = new ContentValues();
-		dados.put(Postos.NOME, posto.nome);
-		dados.put(Postos.ENDERECO, posto.endereco);
-		dados.put(Postos.BAIRRO, posto.bairro);
-		dados.put(Postos.CIDADE, posto.cidade);
-		dados.put(Postos.UF, posto.uf);
-		dados.put(Postos.DATA, posto.data);
-		dados.put(Postos.LATITUDE, posto.latitude);
-		dados.put(Postos.LONGITUDE, posto.longitude);
-		dados.put(Postos.VLGASOLINA, posto.vlgas);
-		dados.put(Postos.VLALCOOL, posto.vlalc);
-//		dados.put(Postos.VLDIESEL, posto.vldie);
-//		dados.put(Postos.VLGNV, posto.vlgnv);
-
-		String _id = String.valueOf(posto.id);
-		String where = Postos._ID + "=?";
-		String[] whereArgs = new String[] { _id };
-		int count = Alterar(dados, where, whereArgs);
-		return count;
-	}
-
-	public int Alterar(ContentValues dados, String where, String[] whereArgs) {
-		int count = db.update(TABLE_NAME, dados, where, whereArgs);
-		Log.i(LOG_TAG, "Atualizou [" + count + "] registros.");
-		return count;
-	}
-
-	public Posto buscarPosto(long id) {
-		Cursor c = db.query(true, TABLE_NAME, Posto.colunas, Postos._ID + "=" + id, null, null, null, null, null);
-		if (c.getCount() > 0) {
-			c.moveToFirst();
-			Posto posto = new Posto();
-			posto.id = c.getLong(0);
-			posto.nome = c.getString(1);
-			posto.endereco = c.getString(8);
-			posto.bairro = c.getString(2);
-			posto.cidade = c.getString(3);
-			posto.uf = c.getString(4);
-			posto.data = c.getString(5);
-			posto.latitude = c.getString(6);
-			posto.longitude = c.getString(7);
-			posto.vlgas = c.getString(9);
-			posto.vlalc = c.getString(10);
-			posto.vldie = c.getString(11);
-			posto.vlgnv = c.getString(12);
-
-			return posto;
-		}
-		return null;
-	}
-
-	public List<Posto> listarSelecionados(String itens) {
-		List<Posto> postos = new ArrayList<Posto>();
-
-		Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE _id IN(" + itens + ")", null);
-
-		if (c != null) {
-			if (c.moveToFirst()) {
-				do {
-					Posto posto = new Posto();
-
-					posto.id = c.getLong(0);
-					posto.nome = c.getString(1);
-					posto.endereco = c.getString(2);
-					posto.bairro = c.getString(3);
-					posto.cidade = c.getString(4);
-					posto.uf = c.getString(5);
-					posto.data = c.getString(6);
-					posto.latitude = c.getString(7);
-					posto.longitude = c.getString(8);
-					posto.vlgas = c.getString(9);
-					posto.vlalc = c.getString(10);
-					posto.vldie = c.getString(11);
-					posto.vlgnv = c.getString(12);
-
-					postos.add(posto);
-
-					Log.i(LOG_TAG, "Posto [" + posto.id + "][" + posto.nome + "].");
-				} while (c.moveToNext());
-			}
-		}
-
-		return postos;
-	}
-	
 	public List<Posto> listarPostos() {
 		Cursor c = getCursor();
 		List<Posto> postos = new ArrayList<Posto>();
 		
 		if (c.moveToFirst()) {
-			int idxId = c.getColumnIndex(Postos._ID);
-			int idxNome = c.getColumnIndex(Postos.NOME);
-			int idxEndereco = c.getColumnIndex(Postos.ENDERECO);
-			int idxBairro = c.getColumnIndex(Postos.BAIRRO);
-			int idxCidade = c.getColumnIndex(Postos.CIDADE);
-			int idxUf = c.getColumnIndex(Postos.UF);
-			int idxData = c.getColumnIndex(Postos.DATA);
-			int idxLatitude = c.getColumnIndex(Postos.LATITUDE);
-			int idxLongitude = c.getColumnIndex(Postos.LONGITUDE);
-			int idxVlGas = c.getColumnIndex(Postos.VLGASOLINA);
-			int idxVlAlc = c.getColumnIndex(Postos.VLALCOOL);
-			int idxVlDie = c.getColumnIndex(Postos.VLDIESEL);
-			int idxVlGnv = c.getColumnIndex(Postos.VLGNV);
-
 			do {
 				Posto posto = new Posto();
 
-				posto.id = c.getLong(idxId);
-				posto.nome = c.getString(idxNome);
-				posto.endereco = c.getString(idxEndereco);
-				posto.bairro = c.getString(idxBairro);
-				posto.cidade = c.getString(idxCidade);
-				posto.uf = c.getString(idxUf);
-				posto.data = c.getString(idxData);
-				posto.latitude = c.getString(idxLatitude);
-				posto.longitude = c.getString(idxLongitude);
-				posto.vlgas = c.getString(idxVlGas);
-				posto.vlalc = c.getString(idxVlAlc);
-				posto.vldie = c.getString(idxVlDie);
-				posto.vlgnv = c.getString(idxVlGnv);
-
-//				double lat = Double.parseDouble(posto.latitude.toString());
-//				double lon = Double.parseDouble(posto.longitude.toString());
+				posto.id = c.getLong(c.getColumnIndex(Postos._ID));
+				posto.nome = c.getString(c.getColumnIndex(Postos.NOME));
+				posto.endereco = c.getString(c.getColumnIndex(Postos.ENDERECO));
+				posto.bairro = c.getString(c.getColumnIndex(Postos.BAIRRO));
+				posto.cidade = c.getString(c.getColumnIndex(Postos.CIDADE));
+				posto.uf = c.getString(c.getColumnIndex(Postos.UF));
+				posto.data = c.getString(c.getColumnIndex(Postos.DATA));
+				posto.latitude = c.getString(c.getColumnIndex(Postos.LATITUDE));
+				posto.longitude = c.getString(c.getColumnIndex(Postos.LONGITUDE));
+				posto.vlgas = c.getString(c.getColumnIndex(Postos.VLGASOLINA));
+				posto.vleta = c.getString(c.getColumnIndex(Postos.VLETANOL));
 
 				postos.add(posto);
-//				Log.i(LOG_TAG, "Posto: " + posto.nome);
 
 			} while (c.moveToNext());
 		}
 		return postos;
 	}
-
-	public List<Posto> listarPostosProximos(Posicao posicao) {
+	
+	public List<Posto> listarPostosProximos(Location posicao) {
 		Cursor c = getCursor();
-//		this.ponto = ponto;
 		List<Posto> postos = new ArrayList<Posto>();
 		
 		if (c.moveToFirst()) {
-			int idxId = c.getColumnIndex(Postos._ID);
-			int idxNome = c.getColumnIndex(Postos.NOME);
-			int idxEndereco = c.getColumnIndex(Postos.ENDERECO);
-			int idxBairro = c.getColumnIndex(Postos.BAIRRO);
-			int idxCidade = c.getColumnIndex(Postos.CIDADE);
-			int idxUf = c.getColumnIndex(Postos.UF);
-			int idxData = c.getColumnIndex(Postos.DATA);
-			int idxLatitude = c.getColumnIndex(Postos.LATITUDE);
-			int idxLongitude = c.getColumnIndex(Postos.LONGITUDE);
-			int idxVlGas = c.getColumnIndex(Postos.VLGASOLINA);
-			int idxVlAlc = c.getColumnIndex(Postos.VLALCOOL);
-			int idxVlDie = c.getColumnIndex(Postos.VLDIESEL);
-			int idxVlGnv = c.getColumnIndex(Postos.VLGNV);
-
 			do {
 				Posto posto = new Posto();
 
-				posto.id = c.getLong(idxId);
-				posto.nome = c.getString(idxNome);
-				posto.endereco = c.getString(idxEndereco);
-				posto.bairro = c.getString(idxBairro);
-				posto.cidade = c.getString(idxCidade);
-				posto.uf = c.getString(idxUf);
-				posto.data = c.getString(idxData);
-				posto.latitude = c.getString(idxLatitude);
-				posto.longitude = c.getString(idxLongitude);
-				posto.vlgas = c.getString(idxVlGas);
-				posto.vlalc = c.getString(idxVlAlc);
-				posto.vldie = c.getString(idxVlDie);
-				posto.vlgnv = c.getString(idxVlGnv);
+				posto.id = c.getLong(c.getColumnIndex(Postos._ID));
+				posto.nome = c.getString(c.getColumnIndex(Postos.NOME));
+				posto.endereco = c.getString(c.getColumnIndex(Postos.ENDERECO));
+				posto.bairro = c.getString(c.getColumnIndex(Postos.BAIRRO));
+				posto.cidade = c.getString(c.getColumnIndex(Postos.CIDADE));
+				posto.uf = c.getString(c.getColumnIndex(Postos.UF));
+				posto.data = c.getString(c.getColumnIndex(Postos.DATA));
+				posto.latitude = c.getString(c.getColumnIndex(Postos.LATITUDE));
+				posto.longitude = c.getString(c.getColumnIndex(Postos.LONGITUDE));
+				posto.vlgas = c.getString(c.getColumnIndex(Postos.VLGASOLINA));
+				posto.vleta = c.getString(c.getColumnIndex(Postos.VLETANOL));
 
-				double lat = Double.parseDouble(posto.latitude.toString());
-				double lon = Double.parseDouble(posto.longitude.toString());
+				double latP = Double.parseDouble(posto.latitude.toString());
+				double lonP = Double.parseDouble(posto.longitude.toString());
 
-				Location bLocation = new Location("reverseGeocoded");
-				bLocation.setLatitude(lat); // Value = 3.294391E7
-				bLocation.setLongitude(lon); // Value = -9.6564615E7
-				Location aLocation = new Location("reverseGeocoded");
+				Location locPosto = new Location("reverseGeocoded");
+				locPosto.setLatitude(latP); 
+				locPosto.setLongitude(lonP); 
 				
-				aLocation.setLatitude(posicao.localizacao.getLatitude());
-				aLocation.setLatitude(posicao.localizacao.getLongitude());
-//				aLocation.setLatitude(ponto.getLatitudeE6() / 1E6); 
+				double latU = posicao.getLatitude();
+				double lonU = posicao.getLongitude();
+				
+				Location locUsuario = new Location("reverseGeocoded");
+				locUsuario.setLatitude(latU);
+				locUsuario.setLongitude(lonU);
+				
+//				locUsuario.setLatitude(ponto.getLatitudeE6() / 1E6); 
 //				aLocation.setLongitude(ponto.getLongitudeE6() / 1E6); 
-				
 //				aLocation.set(aLocation); // Don't think I need this
 //				bLocation.set(bLocation); // Don't think I need this either
 
-				int distancia = (int) aLocation.distanceTo(bLocation);
+				int distancia = (int) locUsuario.distanceTo(locPosto);
 
 //				pegaConfiguracao();
 //				
@@ -326,44 +169,12 @@ public class DataHelper {
 		}
 		return postos;
 	}
-	
 
-	public List<Posto> buscarPostoPorBairro(String bairro) {
-		List<Posto> postos = new ArrayList<Posto>();
-		Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE bairro like '%" + bairro + "%'", null);
-
-		if (c != null) {
-			if (c.moveToFirst()) {
-				do {
-					Posto posto = new Posto();
-
-					posto.id = c.getLong(0);
-					posto.nome = c.getString(1);
-					posto.endereco = c.getString(2);
-					posto.bairro = c.getString(3);
-					posto.cidade = c.getString(4);
-					posto.uf = c.getString(5);
-					posto.data = c.getString(6);
-					posto.latitude = c.getString(7);
-					posto.longitude = c.getString(8);
-					posto.vlgas = c.getString(9);
-					posto.vlalc = c.getString(10);
-					posto.vldie = c.getString(11);
-					posto.vlgnv = c.getString(12);
-
-//					double lat = Double.parseDouble(posto.latitude.toString());
-//					double lon = Double.parseDouble(posto.longitude.toString());
-
-					postos.add(posto);
-//					Log.i(LOG_TAG, "Posto: " + posto.nome);
-//
-//					Log.i(LOG_TAG, "Posto [" + posto.id + "][" + posto.nome + "].");
-				} while (c.moveToNext());
-			}
-		}
-		return postos;
+	public Cursor query(SQLiteQueryBuilder queryBuilder, String[] projection, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
+		Cursor c = queryBuilder.query(this.db, projection, selection, selectionArgs, groupBy, having, orderBy);
+		return c;
 	}
-	
+
 	public void Fechar() {
 		 if(db != null){
 		 db.close();

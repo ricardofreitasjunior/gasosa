@@ -6,17 +6,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
+
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -30,7 +37,9 @@ import android.widget.Toast;
 
 import br.com.jera.gasosa.db.DataHelper;
 import br.com.jera.gasosa.db.Posto;
+import br.com.jera.gasosa.gps.Posicao;
 import br.com.jera.gasosa.Calculator.Fuel;
+import br.com.jeramobstats.JeraAgent;
 //import br.com.jeramobstats.JeraAgent;
 
 //import com.google.ads.AdRequest;
@@ -50,72 +59,148 @@ public class Principal extends GasosaActivity {
 
 	String format;
 	
+	private Posicao posicao = new Posicao(this);
+	public String estado;
+	public String cidade;
+
+	private ProgressDialog dialog;
+	protected static final String LOG_TAG = "Mensagem";
+	private String mensagem;
+
 	private static DataHelper repositorio;
+	private Posto posto;
 	private List<Posto> postos;
-//	private String[] lista;
-	private ArrayAdapter<CharSequence> adaptador;
-	private Spinner combo;
+//	private ArrayAdapter<CharSequence> adaptador;
+	private CharSequence[] lista;
+	private Button btnTodos;
+	private Button btnProximos;
 	private EditText gas;
 	private EditText eth;
-	private Posto posto;
+	private long id;
+	
+	
+	public long getId() {
+		return id;
+	}
+
+	public void setId(long id2) {
+		this.id = id2;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		
-//		posicao.pegaPosicao();
-		Log.i(LOG_TAG, "Posicao: [" + posicao.localizacao.getLatitude() + ", " + posicao.localizacao.getLongitude() + "], Cidade: " +posicao.cidade + ", Estado: " + posicao.estado);
-		
+		dialog = ProgressDialog.show(this, "Gasosa 2.0", "Buscando posição do usuário...", false, true);
 
-		gas = (EditText) findViewById(R.id.gasolina_price);
-		eth = (EditText) findViewById(R.id.alcool_price);
-		
-		combo = (Spinner) findViewById(R.id.sppostos);
-		postos = repositorio.getDataHelper(this).listarPostos();
+		pegaPosicao();
 
+		mostraMensagem();
 		
-		adaptador = new ArrayAdapter(this, android.R.layout.simple_spinner_item);
-		adaptador.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);  
-		
-		combo.setAdapter(adaptador);
-		adaptador.add("Selecione o posto");
-		
-		for (int i = 0; i < postos.size(); i++) {
-//			CharSequence textHolder = "" + postos.get(i).nome;
-			Log.i(LOG_TAG, "Posto: " + postos.get(i).nome);
-			adaptador.add("" + postos.get(i).nome);
+		preferencias();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.layout.menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.todos: {
+			pegaPostos("todos");
+			return true;
+		}
+		case R.id.proximos: {
+			pegaPostos("proximos");
+			return true;
+		}
+		case R.id.bairro: {
+			
+			return true;
+		}
+		case R.id.search: {
+//			startActivity(new Intent(this, GasosaDB.class));
+			return true;
+		}
+		case R.id.config: {
+			startActivity(new Intent(this, Config.class));
+			return true;
+		}
+		case R.id.principal: {
+			Intent intent = new Intent(this, Principal.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
+
+			return true;
+		}
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	private void pegaPostos(String busca) {
+		if (busca == "todos"){
+			postos = repositorio.getDataHelper(this).listarPostos();	
+		} else if (busca == "proximos"){
+			if (posicao.localizacao != null) {
+				postos = repositorio.getDataHelper(this).listarPostosProximos(posicao.localizacao);
+			}
 		}
 		
-		combo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView parent, View v, int posicao, long id) {
-				
-				gas.setText(postos.get(posicao).vlgas);
-				eth.setText(postos.get(posicao).vlalc);
-				
-				posto.id = 2;//postos.get(posicao).id;
-				posto.nome = postos.get(posicao).nome;
-				posto.endereco = postos.get(posicao).endereco;
-				
-				SimpleDateFormat simpleFormat = new SimpleDateFormat("dd/MM/yyyy");
-				posto.data = simpleFormat.format( new Date( System.currentTimeMillis() ));
-				posto.bairro = postos.get(posicao).bairro;
-				posto.cidade = postos.get(posicao).cidade;
-				posto.uf = postos.get(posicao).uf;
-				posto.latitude = postos.get(posicao).latitude;
-				posto.longitude = postos.get(posicao).longitude;
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
+		lista = new CharSequence[postos.size()];
 		
+		for (int i = 0; i < postos.size(); i++) {
+//			adaptador.add("" + postos.get(i).nome);
+			lista[i] = postos.get(i).nome;
+		}
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Selecione o posto");
+		builder.setSingleChoiceItems(lista, -1, new DialogInterface.OnClickListener() {
+		    public void onClick(DialogInterface dialog, int item) {
+		    	gasolinePriceText.setText(postos.get(item).vlgas);
+		    	etanolPriceText.setText(postos.get(item).vleta);
+				setId(postos.get(item).id);
+				Log.i(LOG_TAG, "ID do select: " + getId());
+				dialog.dismiss();
+		    }
+		});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
 
+	private void pegaPosicao() {
+		mensagem = posicao.pegaPosicao();
+		if (posicao.localizacao != null) {
+			dialog.dismiss();
+			Log.i(LOG_TAG, "Posição: " + mensagem);
+//			posicao.locationManager.removeUpdates(posicao);
+		} else {
+			Log.i(LOG_TAG, mensagem);
+			dialog.dismiss();
+		}
+	}
+	
+	private void mostraMensagem() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(mensagem).setCancelable(false)
+				.setTitle("Mensagem de Posicionamento")
+				.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.dismiss();
+					}
+				});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+	
+	private void preferencias() {
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
 		if (prefs.getBoolean("first_time", true)) {
 			SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME,0).edit();
@@ -129,8 +214,8 @@ public class Principal extends GasosaActivity {
 				dialog.show();
 				dialog.setSplashed(true);
 			}		
-//			AdView adView = (AdView) this.findViewById(R.id.adView);
-//			adView.loadAd(new AdRequest());
+			AdView adView = (AdView) this.findViewById(R.id.adView);
+			adView.loadAd(new AdRequest());
 			calculator = new Calculator(getSharedPreferences(PREFS_NAME, 0));
 			retrieveReferences();
 			gasolinePriceText.addTextChangedListener(new MoneyTextWatcher(gasolinePriceText));
@@ -144,14 +229,14 @@ public class Principal extends GasosaActivity {
     protected void onStart()
     {
         super.onStart();
-//        JeraAgent.onStartSession(this, "QI4YUGV5K7FN7I42RPA1");
+        JeraAgent.onStartSession(this, "QI4YUGV5K7FN7I42RPA1");
     }
 
     @Override
     protected void onStop()
     {
         super.onStop();
-//        JeraAgent.onEndSession(this);
+        JeraAgent.onEndSession(this);
     }
 
 	private void retrieveReferences() {
@@ -192,10 +277,17 @@ public class Principal extends GasosaActivity {
 			}
 			imm.hideSoftInputFromWindow(calcButton.getWindowToken(), 0);
 			
-			posto.vlalc = etanolPriceText.getText().toString();
-			posto.vlgas = gasolinePriceText.getText().toString();
-			repositorio.Atualizar(posto);
+			atualiza();
 
+		}
+
+		private void atualiza() {
+			Posto posto = new Posto();
+			posto.id = getId();
+			Log.i(LOG_TAG, "ID do posto: " + posto.id);
+			posto.vleta = etanolPriceText.getText().toString();
+			posto.vlgas = gasolinePriceText.getText().toString();
+//			repositorio.getDataHelper(this).Atualizar(posto);
 		}
 
 	}
