@@ -3,6 +3,10 @@ package br.com.jera.gasosa.gps;
 import java.util.List;
 import java.util.Locale;
 
+import br.com.jera.gasosa.gps.Ponto;
+
+import com.google.android.maps.GeoPoint;
+
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -78,7 +82,8 @@ protected static final String LOG_TAG = "Mensagem";
 	}
 
 	public void onLocationChanged(Location location) {
-		pegaPosicao();
+//		pegaPosicao();
+		localizacao = location;
 	}
 
 	public void onProviderDisabled(String provider) {

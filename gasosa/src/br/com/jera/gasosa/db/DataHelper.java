@@ -13,6 +13,7 @@ import android.location.Location;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import br.com.jera.gasosa.db.Posto;
 import br.com.jera.gasosa.db.Posto.Postos;
 import br.com.jera.gasosa.gps.Posicao;
 
@@ -170,6 +171,40 @@ public class DataHelper {
 		return postos;
 	}
 
+	public int Atualizar(Posto posto) {
+		ContentValues dados = new ContentValues();
+		dados.put(Postos._ID, posto.id);
+//		dados.put(Postos.NOME, posto.nome);		
+//		dados.put(Postos.ENDERECO, posto.endereco);
+//		dados.put(Postos.BAIRRO, posto.bairro);
+//		dados.put(Postos.CIDADE, posto.cidade);
+//		dados.put(Postos.UF, posto.uf);
+//		dados.put(Postos.DATA, posto.data);
+//		dados.put(Postos.LATITUDE, posto.latitude);
+//		dados.put(Postos.LONGITUDE, posto.longitude);
+		dados.put(Postos.VLGASOLINA, posto.vlgas);
+		dados.put(Postos.VLETANOL, posto.vleta);
+//		dados.put(Postos.VLDIESEL, posto.vldie);
+//		dados.put(Postos.VLGNV, posto.vlgnv);
+		Log.i(LOG_TAG, "Dados: id = " +posto.id + ", gas= " +posto.vlgas + ", alc = " +posto.vleta);
+//		db.beginTransaction();
+//		db.execSQL("UPDATE " + TABLE_NAME + " SET vlgas = '" + posto.vlgas + "', vlalc = '" + posto.vleta + "' WHERE _id = " + posto.id , null);
+//		db.setTransactionSuccessful();
+//		db.endTransaction();
+		String _id = String.valueOf(posto.id);
+		String where = Postos._ID + "=?";
+		String[] whereArgs = new String[] { _id };
+		int count = Alterar(dados, where, whereArgs);
+		return count;
+//		return 1;
+	}
+
+	public int Alterar(ContentValues dados, String where, String[] whereArgs) {
+		int count = db.update(TABLE_NAME, dados, where, whereArgs);
+		Log.i(LOG_TAG, "Atualizou [" + count + "] registros.");
+		return count;
+	}
+	
 	public Cursor query(SQLiteQueryBuilder queryBuilder, String[] projection, String selection, String[] selectionArgs, String groupBy, String having, String orderBy) {
 		Cursor c = queryBuilder.query(this.db, projection, selection, selectionArgs, groupBy, having, orderBy);
 		return c;

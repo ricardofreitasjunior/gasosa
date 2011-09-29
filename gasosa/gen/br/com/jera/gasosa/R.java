@@ -46,17 +46,16 @@ containing a value of this type.
         public static final int icon=0x7f020008;
         public static final int icon_green_a=0x7f020009;
         public static final int icon_green_b=0x7f02000a;
-        public static final int icon_green_c=0x7f02000b;
-        public static final int logo=0x7f02000c;
-        public static final int logo_focused=0x7f02000d;
-        public static final int logo_pressed=0x7f02000e;
-        public static final int logo_unfocused=0x7f02000f;
-        public static final int notification=0x7f020010;
-        public static final int pesquisar=0x7f020011;
-        public static final int ponto=0x7f020012;
-        public static final int splash=0x7f020013;
-        public static final int top=0x7f020014;
-        public static final int valor=0x7f020015;
+        public static final int logo=0x7f02000b;
+        public static final int logo_focused=0x7f02000c;
+        public static final int logo_pressed=0x7f02000d;
+        public static final int logo_unfocused=0x7f02000e;
+        public static final int notification=0x7f02000f;
+        public static final int pesquisar=0x7f020010;
+        public static final int ponto=0x7f020011;
+        public static final int splash=0x7f020012;
+        public static final int top=0x7f020013;
+        public static final int valor=0x7f020014;
     }
     public static final class id {
         public static final int AddBtn=0x7f05001f;
@@ -87,21 +86,21 @@ containing a value of this type.
         public static final int linearLayout2=0x7f05000c;
         public static final int linha=0x7f050012;
         public static final int mainLayout=0x7f050011;
+        public static final int mapa=0x7f050029;
         public static final int newSpinnerItemText=0x7f05001e;
         public static final int nome=0x7f050018;
         public static final int precos=0x7f050013;
         public static final int principal=0x7f05002d;
-        public static final int proximos=0x7f05002a;
+        public static final int proximos=0x7f05002b;
         public static final int resultEthanol=0x7f050026;
         public static final int resultGas=0x7f050027;
         public static final int resultImage=0x7f050025;
         public static final int save_button=0x7f05000a;
-        public static final int search=0x7f05002b;
         public static final int splash=0x7f05000f;
         public static final int tableRow1=0x7f05001c;
         public static final int textView1=0x7f050004;
         public static final int textView2=0x7f050006;
-        public static final int todos=0x7f050029;
+        public static final int todos=0x7f05002a;
         public static final int vlalc=0x7f050015;
         public static final int vldie=0x7f050016;
         public static final int vlgas=0x7f050014;
@@ -113,7 +112,8 @@ containing a value of this type.
         public static final int form_lista=0x7f030003;
         public static final int form_spinner=0x7f030004;
         public static final int main=0x7f030005;
-        public static final int menu=0x7f030006;
+        public static final int mapa=0x7f030006;
+        public static final int menu=0x7f030007;
     }
     public static final class string {
         public static final int app_name=0x7f070003;

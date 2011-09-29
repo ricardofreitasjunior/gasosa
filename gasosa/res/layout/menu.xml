@@ -14,9 +14,9 @@
 		android:icon="@android:drawable/ic_menu_search"
 		android:title="Bairro" />
 	<item
-		android:id="@+id/search"
-		android:icon="@android:drawable/ic_menu_search"
-		android:title="Postos" />
+		android:id="@+id/mapa"
+		android:icon="@android:drawable/ic_menu_mapmode"
+		android:title="Mapa" />
 	<item
 		android:id="@+id/config"
 		android:icon="@android:drawable/ic_menu_preferences"
@@ -25,4 +25,5 @@
 		android:id="@+id/principal"
 		android:icon="@android:drawable/ic_menu_edit"
 		android:title="Calcular" />
+		
 </menu>

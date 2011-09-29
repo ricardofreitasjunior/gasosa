@@ -1,18 +1,9 @@
 package br.com.jera.gasosa;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.ads.AdRequest;
-import com.google.ads.AdView;
-
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.Spinner;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -31,16 +22,18 @@ import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+import br.com.jera.gasosa.Calculator.Fuel;
 import br.com.jera.gasosa.db.DataHelper;
 import br.com.jera.gasosa.db.Posto;
 import br.com.jera.gasosa.gps.Posicao;
-import br.com.jera.gasosa.Calculator.Fuel;
 import br.com.jeramobstats.JeraAgent;
-//import br.com.jeramobstats.JeraAgent;
+
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
 
 //import com.google.ads.AdRequest;
 //import com.google.ads.AdView;
@@ -123,8 +116,8 @@ public class Principal extends GasosaActivity {
 			
 			return true;
 		}
-		case R.id.search: {
-//			startActivity(new Intent(this, GasosaDB.class));
+		case R.id.mapa: {
+			startActivity(new Intent(this, Mapa.class));
 			return true;
 		}
 		case R.id.config: {
@@ -267,27 +260,17 @@ public class Principal extends GasosaActivity {
 			Map<String, String> parameters = new HashMap<String, String>();
 			parameters.put("GASOLINE_PRICE", String.valueOf(calculator.getGasolinePrice()));
             parameters.put("ETHANOL_PRICE" , String.valueOf(calculator.getEthanolPrice()));
-//			JeraAgent.logEvent("CALC_PRICE", parameters);
-			
+			JeraAgent.logEvent("CALC_PRICE", parameters);
+//			
 			Fuel fuel = calculator.evaluatePrice();
 			if (fuel.equals(Fuel.GASOLINE)) {
 				showResult(R.drawable.gas, resultGas, resultEtanol);
 			} else {
 				showResult(R.drawable.ethanol, resultEtanol, resultGas);
 			}
+//			
 			imm.hideSoftInputFromWindow(calcButton.getWindowToken(), 0);
 			
-			atualiza();
-
-		}
-
-		private void atualiza() {
-			Posto posto = new Posto();
-			posto.id = getId();
-			Log.i(LOG_TAG, "ID do posto: " + posto.id);
-			posto.vleta = etanolPriceText.getText().toString();
-			posto.vlgas = gasolinePriceText.getText().toString();
-//			repositorio.getDataHelper(this).Atualizar(posto);
 		}
 
 	}
@@ -302,5 +285,16 @@ public class Principal extends GasosaActivity {
 
 		resultImage.startAnimation(fadeAnimation);
 		resultImage.setVisibility(View.VISIBLE);
+		
+		atualiza();
+	}
+	
+	private void atualiza() {
+		Posto posto = new Posto();
+		posto.id = getId();
+		Log.i(LOG_TAG, "ID do posto: " + posto.id);
+		posto.vleta = etanolPriceText.getText().toString();
+		posto.vlgas = gasolinePriceText.getText().toString();
+		repositorio.getDataHelper(Principal.this).Atualizar(posto);
 	}
 }

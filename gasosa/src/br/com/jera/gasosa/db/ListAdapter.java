@@ -84,10 +84,7 @@ public class ListAdapter extends ArrayAdapter<Posto> {
 		vlgasolina.setText("G: " + posto.vlgas);
 
 		TextView vlalcool = (TextView) view.findViewById(R.id.vlalc);
-		vlalcool.setText("A: " + posto.vlalc);
-
-		TextView vldiesel = (TextView) view.findViewById(R.id.vldie);
-		vldiesel.setText("D: " + posto.vldie);
+		vlalcool.setText("A: " + posto.vleta);
 
 		return view;
 	}
